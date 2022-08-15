@@ -44,12 +44,17 @@ async function getUserByUsername(username: string) {
     });
 }
 
+async function reset() {
+    await prisma.users.deleteMany();
+}
+
 const authRepository = {
     insert,
     getUserByEmail,
     login,
     getUserById,
-    getUserByUsername
+    getUserByUsername,
+    reset
 };
 
 export default authRepository;

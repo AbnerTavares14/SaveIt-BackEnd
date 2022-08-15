@@ -53,11 +53,16 @@ async function getUser(id: number) {
     return user;
 }
 
+async function reset() {
+    await authRepository.reset();
+}
+
 
 const authService = {
     createUser,
     login,
-    getUser
+    getUser,
+    reset
 };
 
 export default authService;
