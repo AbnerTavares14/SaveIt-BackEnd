@@ -14,3 +14,10 @@ export async function unlike(req: Request, res: Response) {
     await likeService.unlike(+id, userId);
     res.sendStatus(201);
 }
+
+export async function checkIftheUserHasAlreadyLiked(req: Request, res: Response) {
+    const { id } = req.params;
+    const userId = res.locals.id;
+    const like = await likeService.verifyIfUserLiked(userId, +id);
+    res.send(like);
+}

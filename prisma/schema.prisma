@@ -16,7 +16,6 @@ model users {
   username    String        @unique
   password    String
   picture     String
-  likes       Int           @default(0)
   posts       posts[]
   likesPosts  likesPosts[]
   collections collections[]

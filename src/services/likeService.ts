@@ -1,5 +1,5 @@
 import postRepository from "../repositories/postRepository.js";
-import * as handlerError from "../middlewares/handlerErrorsMiddleware.js";
+import handleErrorsMiddleware, * as handlerError from "../middlewares/handlerErrorsMiddleware.js";
 import { likesPosts } from "@prisma/client";
 import likeRepository from "../repositories/likeRepository.js";
 
@@ -7,27 +7,40 @@ export type Like = Omit<likesPosts, "id">;
 
 async function like(postId: number, userId: number) {
     const post = await postRepository.getPostById(postId);
+    const like = await likeRepository.getLike(postId, userId);
+    if (like) {
+        throw handlerError.conflict();
+    }
     if (!post) {
         throw handlerError.notFoundError();
     }
     await likeRepository.create({ userId, postId });
 }
 
+async function verifyIfUserLiked(userId: number, postId: number) {
+    const like = await likeRepository.getLike(postId, userId);
+    if (!like) {
+        return false;
+    }
+    return true;
+}
+
 async function unlike(postId: number, userId: number) {
     const post = await postRepository.getPostById(postId);
-    const { id } = await likeRepository.getLike(postId, userId);
+    const like = await likeRepository.getLike(postId, userId);
     if (!post) {
         throw handlerError.notFoundError();
     }
     if (!like) {
         throw handlerError.notFoundError();
     }
-    await likeRepository.removeLike(id, postId);
+    await likeRepository.removeLike(like.id, postId);
 }
 
 const likeService = {
     like,
-    unlike
+    unlike,
+    verifyIfUserLiked
 };
 
 export default likeService;

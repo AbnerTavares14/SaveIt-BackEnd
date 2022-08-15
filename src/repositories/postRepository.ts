@@ -14,13 +14,71 @@ async function getPostById(id: number) {
 }
 
 async function getPosts() {
-    return prisma.posts.findMany();
+    return prisma.posts.findMany({
+        select: {
+            id: true,
+            userId: true,
+            picture: true,
+            likes: true,
+            users: {
+                select: {
+                    username: true,
+                    picture: true
+                }
+            }
+        }
+    });
+}
+
+async function getPostByUser(id: number) {
+    return prisma.posts.findMany({
+        where: {
+            userId: id
+        },
+        orderBy: {
+            likes: 'desc'
+        },
+        select: {
+            id: true,
+            userId: true,
+            picture: true,
+            likes: true,
+            users: {
+                select: {
+                    username: true,
+                    picture: true
+                }
+            }
+        }
+    });
+}
+
+async function getPostsOrderByLikes() {
+    return prisma.posts.findMany({
+        orderBy: {
+            likes: 'desc'
+        },
+        select: {
+            id: true,
+            userId: true,
+            picture: true,
+            likes: true,
+            users: {
+                select: {
+                    username: true,
+                    picture: true
+                }
+            }
+        }
+    });
 }
 
 const postRepository = {
     insert,
     getPostById,
-    getPosts
+    getPosts,
+    getPostByUser,
+    getPostsOrderByLikes
 };
 
 export default postRepository;

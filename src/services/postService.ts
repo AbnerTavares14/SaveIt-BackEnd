@@ -24,10 +24,22 @@ async function getAllPosts() {
     return posts;
 }
 
+async function getPostsByUser(id: number) {
+    const posts = await postRepository.getPostByUser(id);
+    return posts;
+}
+
+async function rankingByLikes() {
+    const posts = await postRepository.getPostsOrderByLikes();
+    return posts;
+}
+
 const postService = {
     create,
     getPost,
-    getAllPosts
+    getAllPosts,
+    getPostsByUser,
+    rankingByLikes
 }
 
 export default postService;

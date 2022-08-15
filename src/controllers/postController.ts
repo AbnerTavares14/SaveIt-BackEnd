@@ -19,3 +19,14 @@ export async function getPost(req: Request, res: Response) {
     const post = await postService.getPost(+id);
     res.send(post);
 }
+
+export async function getPostsByUser(req: Request, res: Response) {
+    const { userId } = req.params;
+    const posts = await postService.getPostsByUser(+userId);
+    res.send(posts);
+}
+
+export async function rankingByLikes(req: Request, res: Response) {
+    const posts = await postService.rankingByLikes();
+    res.send(posts);
+}

@@ -29,11 +29,27 @@ async function getUserById(id: number) {
     });
 }
 
+async function getUserByUsername(username: string) {
+    return prisma.users.findMany({
+        where: {
+            username: {
+                contains: username
+            }
+        },
+        select: {
+            username: true,
+            id: true,
+            picture: true
+        }
+    });
+}
+
 const authRepository = {
     insert,
     getUserByEmail,
     login,
-    getUserById
+    getUserById,
+    getUserByUsername
 };
 
 export default authRepository;
