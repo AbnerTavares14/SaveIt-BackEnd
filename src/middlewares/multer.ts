@@ -1,14 +1,23 @@
 import multer from "multer";
-import path from "path";
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, '../../uploads/pictures/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${file.filename}-${Date.now()}.${path.extname(file.originalname)}`);
-    }
+// export const imageUpload = multer({
+//     dest: 'uploads',
+// });
+
+export const imageUpload = multer({
+    storage: multer.diskStorage(
+        {
+            destination: function (req, file, cb) {
+                cb(null, 'uploads/');
+            },
+            filename: function (req, file, cb) {
+                cb(
+                    null,
+                    new Date().valueOf() +
+                    '_' +
+                    file.originalname
+                );
+            }
+        }
+    ),
 });
-const upload = multer({ storage });
-
-export default upload;

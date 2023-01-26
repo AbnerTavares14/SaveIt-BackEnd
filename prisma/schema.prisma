@@ -54,3 +54,11 @@ model collections {
   posts  posts @relation(fields: [postId], references: [id], onDelete: Cascade)
   users  users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model image {
+  id       Int    @id @default(autoincrement())
+  filename String @unique
+  filepath String
+  mimetype String
+  size     BigInt
+}
