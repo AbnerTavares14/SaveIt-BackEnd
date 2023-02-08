@@ -5,6 +5,7 @@ import { unauthorized } from "./handlerErrorsMiddleware.js";
 export async function verifyToken(req: Request, res: Response, next: NextFunction) {
     const authorization = req.headers.authorization || "";
     const token = authorization.replace("Bearer ", "");
+    // console.log(token);
     if (!token) {
         throw unauthorized();
     }

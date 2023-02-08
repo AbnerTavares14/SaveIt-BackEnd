@@ -16,10 +16,13 @@ model users {
   username    String        @unique
   password    String
   picture     String
+  public_id   String
   posts       posts[]
   likesPosts  likesPosts[]
   collections collections[]
   sessions    sessions[]
+  avatar      Avatar[]
+  Comment     Comment[]
 }
 
 model sessions {
@@ -32,11 +35,16 @@ model sessions {
 model posts {
   id          Int           @id @default(autoincrement())
   picture     String
+  public_id   String
+  description String?
   likes       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updateAt    DateTime      @updatedAt
   userId      Int
   users       users         @relation(fields: [userId], references: [id], onDelete: Cascade)
   likesPosts  likesPosts[]
   collections collections[]
+  Comment     Comment[]
 }
 
 model likesPosts {
@@ -55,10 +63,20 @@ model collections {
   users  users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model image {
-  id       Int    @id @default(autoincrement())
-  filename String @unique
-  filepath String
-  mimetype String
-  size     BigInt
+model Avatar {
+  id     Int    @id @default(autoincrement())
+  url    String
+  userId Int
+  users  users  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  comment   String
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts     posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
 }

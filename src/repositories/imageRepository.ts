@@ -2,20 +2,21 @@ import prisma from "../config/db.js";
 import { CreateImage } from "../services/postService.js";
 
 async function saveImage(data: CreateImage) {
-    return prisma.image.create({ data });
+    return prisma.avatar.create({ data });
 }
 
-async function findImage(filename: string) {
-    return prisma.image.findFirst({
+async function findImageByUserId(userId: number, id: number) {
+    return prisma.avatar.findFirst({
         where: {
-            filename
+            userId,
+            id
         }
     });
 }
 
 const imageRepository = {
     saveImage,
-    findImage
+    findImageByUserId
 };
 
 export default imageRepository;

@@ -6,11 +6,12 @@ async function insert(data: CreatePost) {
 }
 
 async function getPostById(id: number) {
-    return prisma.posts.findUnique({
+    const post = await prisma.posts.findUnique({
         where: {
             id
         }
     });
+    return post;
 }
 
 async function getPosts() {
@@ -20,10 +21,22 @@ async function getPosts() {
             userId: true,
             picture: true,
             likes: true,
+            description: true,
             users: {
                 select: {
                     username: true,
                     picture: true
+                }
+            },
+            Comment: {
+                select: {
+                    comment: true,
+                    users: {
+                        select: {
+                            username: true,
+                            picture: true,
+                        }
+                    }
                 }
             }
         }
@@ -73,12 +86,21 @@ async function getPostsOrderByLikes() {
     });
 }
 
+async function removePost(id: number) {
+    return prisma.posts.delete({
+        where: {
+            id
+        }
+    });
+}
+
 const postRepository = {
     insert,
     getPostById,
     getPosts,
     getPostByUser,
-    getPostsOrderByLikes
+    getPostsOrderByLikes,
+    removePost
 };
 
 export default postRepository;

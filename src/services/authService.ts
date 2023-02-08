@@ -9,12 +9,13 @@ export interface CreateUser {
     email: string;
     username: string;
     password: string;
-    picture: any
+    picture: string;
+    public_id: string;
 }
 
 export type CreateSession = Omit<sessions, "id">;
 
-async function createUser(email: string, password: string, username: string, picture: any) {
+async function createUser(email: string, password: string, username: string, picture: string, public_id: string) {
     const user = await authRepository.getUserByEmail(email);
 
     if (user) {
@@ -23,7 +24,7 @@ async function createUser(email: string, password: string, username: string, pic
 
     const salt = 10;
     const encryptPassword = bcrypt.hashSync(password, salt);
-    const dataUser: CreateUser = { email, username, password: encryptPassword, picture };
+    const dataUser: CreateUser = { email, username, password: encryptPassword, picture, public_id };
     await authRepository.insert(dataUser);
 }
 

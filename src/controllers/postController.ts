@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
 import postService from "../services/postService.js";
-import { imageUpload } from "../middlewares/multer.js";
-import path from "path";
-
-
+import { v2 as cloudinary } from 'cloudinary';
 
 export async function createPost(req: Request, res: Response) {
-    const { picture } = req.body;
+    const file = req.files.picture;
+    const result = await cloudinary.uploader.upload(file?.tempFilePath, {
+        public_id: `${Date.now()}`,
+        resource_type: "auto",
+        folder: "uploads"
+    });
     const userId = res.locals.id;
-    await postService.create(picture, userId);
+    const { description } = req.body;
+    await postService.create(result.url, userId, result.public_id, description);
     res.sendStatus(201);
 }
 
@@ -35,19 +38,26 @@ export async function rankingByLikes(req: Request, res: Response) {
 }
 
 export async function publishImage(req: Request, res: Response) {
-    const { filename, mimetype, size } = req.file;
-    const filepath = req.file.path;
-    await postService.uploadImages(filename, mimetype, BigInt(size), filepath);
-    res.json({ success: true, filename });
+    const file = req.files.image;
+    const { id } = res.locals;
+    const result = await cloudinary.uploader.upload(file?.tempFilePath, {
+        public_id: `${Date.now()}`,
+        resource_type: "auto",
+        folder: "uploads"
+    });
+    await postService.uploadImages(id, result.url);
+    res.send(result.url);
 }
 
 export async function getImage(req: Request, res: Response) {
-    const { filename } = req.params;
-    const image = await postService.getImage(filename);
-    res.type(image.type).sendFile(image.fullFilePath);
+    const { id } = req.params;
+    const userId = res.locals.id;
+    const image = await postService.getImage(+id, userId);
+    res.send(image);
+}
 
-
-    // const dirname = path.resolve();
-    // const fullFilePath = path.join(dirname, 'uploads/' + filename);
-    // return res.sendFile(fullFilePath);
+export async function deletePost(req: Request, res: Response) {
+    const { id } = req.params;
+    await postService.remove(+id);
+    res.sendStatus(204);
 }

@@ -1,18 +1,23 @@
 import postRepository from "../repositories/postRepository.js";
 import * as handlerError from "../middlewares/handlerErrorsMiddleware.js"
 import imageRepository from "../repositories/imageRepository.js";
-import { image } from "@prisma/client";
+import { Avatar } from "@prisma/client";
 import path from "path";
+import userFactory from "../../tests/factories/userFactory.js";
+import authRepository from "../repositories/authRepository.js";
+import { v2 as cloudinary } from 'cloudinary';
 
 export interface CreatePost {
     picture: string;
-    userId: number
+    userId: number;
+    public_id: string;
+    description?: string;
 };
 
-export type CreateImage = Omit<image, "id">;
+export type CreateImage = Omit<Avatar, "id">;
 
-async function create(picture: string, userId: number) {
-    await postRepository.insert({ picture, userId });
+async function create(picture: string, userId: number, public_id: string, description?: string) {
+    await postRepository.insert({ picture, userId, public_id, description });
 }
 
 async function getPost(postId: number) {
@@ -38,21 +43,29 @@ async function rankingByLikes() {
     return posts;
 }
 
-async function uploadImages(filename: string, mimetype: string, size: bigint, filepath: string) {
-    console.log(filepath);
-    const data: CreateImage = { filename, mimetype, filepath, size };
+async function uploadImages(id: number, url: string) {
+    const user = await authRepository.getUserById(id);
+    if (!user) {
+        throw handlerError.notFoundError();
+    }
+    const data: CreateImage = { userId: id, url };
     await imageRepository.saveImage(data);
 }
 
-async function getImage(filename: string) {
-    const image = await imageRepository.findImage(filename);
-    if (image) {
-        const dirname = path.resolve();
-        const fullFilePath = path.join(dirname, image.filepath);
-        return { type: image.mimetype, fullFilePath };
-    } else {
+async function getImage(id: number, userId: number) {
+    const image = await imageRepository.findImageByUserId(userId, id);
+    return image;
+}
+
+async function remove(id: number) {
+    const post = await postRepository.getPostById(id);
+
+    if (!post) {
         throw handlerError.notFoundError();
     }
+    const result = await cloudinary.uploader.destroy(post?.public_id);
+    console.log(result);
+    await postRepository.removePost(id);
 }
 
 const postService = {
@@ -62,7 +75,8 @@ const postService = {
     getPostsByUser,
     rankingByLikes,
     uploadImages,
-    getImage
+    getImage,
+    remove
 }
 
 export default postService;
