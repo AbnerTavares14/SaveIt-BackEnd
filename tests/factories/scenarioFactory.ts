@@ -10,8 +10,8 @@ const api = supertest(app);
 
 async function createUser() {
     const body = userFactory.generateBody();
-    await authService.createUser(body.email, body.password, body.username, body.picture);
-    return { email: body.email, password: body.password };
+    await authService.createUser(body.email, body.password, body.username, body.picture, "321323123");
+    return { email: body.email, password: body.password, public_id: "321323123" };
 }
 
 async function createPosts() {

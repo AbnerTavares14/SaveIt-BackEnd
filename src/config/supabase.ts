@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient('https://qunnllukrmhgziyagwne.supabase.co/storage/v1', supabaseKey);
+const supabaseURL = process.env.SUPABASE_URL;
+const supabase = createClient(supabaseURL, supabaseKey);
 
 export async function getFileOnSupabase(filename: string) {
     const { data } = await supabase.storage.from('update').getPublicUrl(`upload/${filename}`);

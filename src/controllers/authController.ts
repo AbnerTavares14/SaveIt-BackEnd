@@ -10,7 +10,7 @@ export async function signUp(req: Request, res: Response) {
         resource_type: "auto",
         folder: "uploads"
     });
-    await authService.createUser(email, password, username, result.url, result.public_id);
+    await authService.createUser(email, password, username, result.url, result?.public_id);
     res.sendStatus(201);
 }
 
