@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import authService from "../services/authService.js";
 import { v2 as cloudinary } from 'cloudinary';
+import { UploadedFile } from "express-fileupload";
 
 export async function signUp(req: Request, res: Response) {
     const { email, password, username } = req.body;
-    const file = req.files.picture;
+    const file: UploadedFile = req.files.picture;
+    // console.log(file);
     const result = await cloudinary.uploader.upload(file?.tempFilePath, {
         public_id: `${Date.now()}`,
         resource_type: "auto",
