@@ -57,12 +57,17 @@ async function getImage(id: number, userId: number) {
     return image;
 }
 
-async function remove(id: number) {
+async function remove(id: number, userId: number) {
     const post = await postRepository.getPostById(id);
 
     if (!post) {
         throw handlerError.notFoundError();
     }
+
+    if (post.userId !== userId) {
+        throw handlerError.unauthorized();
+    }
+
     const result = await cloudinary.uploader.destroy(post?.public_id);
     console.log(result);
     await postRepository.removePost(id);

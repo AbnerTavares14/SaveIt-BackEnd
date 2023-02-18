@@ -5,7 +5,7 @@ import { UploadedFile } from "express-fileupload";
 
 export async function signUp(req: Request, res: Response) {
     const { email, password, username } = req.body;
-    const file: UploadedFile = req.files.picture;
+    const file = req.files.picture as UploadedFile;
     // console.log(file);
     const result = await cloudinary.uploader.upload(file?.tempFilePath, {
         public_id: `${Date.now()}`,

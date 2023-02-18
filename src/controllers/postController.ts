@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import postService from "../services/postService.js";
 import { v2 as cloudinary } from 'cloudinary';
+import { UploadedFile } from "express-fileupload";
 
 export async function createPost(req: Request, res: Response) {
-    const file = req.files.picture;
+    const file = req.files.picture as UploadedFile;
     const result = await cloudinary.uploader.upload(file?.tempFilePath, {
         public_id: `${Date.now()}`,
         resource_type: "auto",
@@ -58,6 +59,7 @@ export async function getImage(req: Request, res: Response) {
 
 export async function deletePost(req: Request, res: Response) {
     const { id } = req.params;
-    await postService.remove(+id);
+    const userId = res.locals.id;
+    await postService.remove(+id, userId);
     res.sendStatus(204);
 }
