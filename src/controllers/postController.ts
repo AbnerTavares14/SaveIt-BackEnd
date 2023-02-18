@@ -39,7 +39,7 @@ export async function rankingByLikes(req: Request, res: Response) {
 }
 
 export async function publishImage(req: Request, res: Response) {
-    const file = req.files.image;
+    const file = req.files.picture as UploadedFile;
     const { id } = res.locals;
     const result = await cloudinary.uploader.upload(file?.tempFilePath, {
         public_id: `${Date.now()}`,
